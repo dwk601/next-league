@@ -3,7 +3,6 @@ import LeagueOverview from '@/components/LeagueOverview'
 import UpcomingMatches from '@/components/UpcomingMatches'
 import TopPlayers from '@/components/TopPlayers'
 import LatestNews from '@/components/LatestNews'
-import Navbar from '@/components/Navbar'
 
 export default function Home() {
   return (

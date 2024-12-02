@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum TeamType {
+  COLLEGE
+  PROFESSIONAL
+}
+
+model League {
+  id     Int    @id @default(autoincrement())
+  name   String
+  teams  Team[]
+}
+
+model Team {
+  id            Int            @id @default(autoincrement())
+  name          String
+  league        League         @relation(fields: [leagueId], references: [id])
+  leagueId      Int
+  teamType      TeamType
+  players       Player[]
+  coach         Coach?
+  events        EventTeam[]
+  registrations Registration[]
+  homeMatches   Match[]        @relation("HomeMatches")
+  awayMatches   Match[]        @relation("AwayMatches")
+}
+
+model Player {
+  id           Int          @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  dateOfBirth  DateTime?
+  nationality  String?
+  position     String?
+  imageUrl     String?
+  team         Team         @relation(fields: [teamId], references: [id])
+  teamId       Int
+  stats        PlayerStats?
+}
+
+model Coach {
+  id           Int          @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  dateOfBirth  DateTime?
+  nationality  String?
+  imageUrl     String?
+  team         Team         @relation(fields: [teamId], references: [id])
+  teamId       Int          @unique
+  stats        CoachStats?
+}
+
+model PlayerStats {
+  id         Int     @id @default(autoincrement())
+  goals      Int
+  assists    Int
+  matches    Int
+  player     Player  @relation(fields: [playerId], references: [id])
+  playerId   Int     @unique
+}
+
+model CoachStats {
+  id         Int     @id @default(autoincrement())
+  wins       Int
+  losses     Int
+  draws      Int
+  coach      Coach   @relation(fields: [coachId], references: [id])
+  coachId    Int     @unique
+}
+
+model Event {
+  id            Int            @id @default(autoincrement())
+  name          String
+  description   String
+  startDate     DateTime
+  endDate       DateTime
+  location      String
+  shortDesc     String?
+  eventTeams    EventTeam[]
+  registrations Registration[]
+}
+
+model EventTeam {
+  id       Int    @id @default(autoincrement())
+  event    Event  @relation(fields: [eventId], references: [id])
+  eventId  Int
+  team     Team   @relation(fields: [teamId], references: [id])
+  teamId   Int
+}
+
+model Registration {
+  id         Int       @id @default(autoincrement())
+  event      Event     @relation(fields: [eventId], references: [id])
+  eventId    Int
+  team       Team      @relation(fields: [teamId], references: [id])
+  teamId     Int
+  status     String
+  createdAt  DateTime  @default(now())
+}
+
+model Match {
+  id            Int       @id @default(autoincrement())
+  homeTeam      Team      @relation("HomeMatches", fields: [homeTeamId], references: [id])
+  homeTeamId    Int
+  awayTeam      Team      @relation("AwayMatches", fields: [awayTeamId], references: [id])
+  awayTeamId    Int
+  date          DateTime
+  venue         Venue     @relation(fields: [venueId], references: [id])
+  venueId       Int
+  homeTeamScore Int?
+  awayTeamScore Int?
+}
+
+model Venue {
+  id          Int       @id @default(autoincrement())
+  name        String
+  location    String
+  capacity    Int?
+  matches     Match[]
+}

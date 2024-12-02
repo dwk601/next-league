@@ -2,7 +2,6 @@ import Hero from '@/components/Hero'
 import LeagueOverview from '@/components/LeagueOverview'
 import UpcomingMatches from '@/components/UpcomingMatches'
 import TopPlayers from '@/components/TopPlayers'
-import LatestNews from '@/components/LatestNews'
 
 export default function Home() {
   return (
@@ -12,7 +11,6 @@ export default function Home() {
         <LeagueOverview />
         <UpcomingMatches />
         <TopPlayers />
-        <LatestNews />
       </div>
     </main>
   )

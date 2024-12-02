@@ -1,3 +1,13 @@
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+
 export default function LeagueOverview() {
   const topTeams = [
     { name: "FC Thunder", points: 45, position: 1 },
@@ -7,26 +17,30 @@ export default function LeagueOverview() {
 
   return (
     <section className="py-12">
-      <h2 className="text-3xl font-bold mb-6">League Standings</h2>
-      <div className="bg-white rounded-lg shadow p-6">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b">
-              <th className="text-left pb-4">Position</th>
-              <th className="text-left pb-4">Team</th>
-              <th className="text-left pb-4">Points</th>
-            </tr>
-          </thead>
-          <tbody>
-            {topTeams.map((team) => (
-              <tr key={team.name} className="border-b">
-                <td className="py-4">{team.position}</td>
-                <td className="py-4">{team.name}</td>
-                <td className="py-4">{team.points}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold mb-6">League Standings</h2>
+        <Card>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Position</TableHead>
+                  <TableHead>Team</TableHead>
+                  <TableHead>Points</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {topTeams.map((team) => (
+                  <TableRow key={team.name}>
+                    <TableCell>{team.position}</TableCell>
+                    <TableCell className="font-medium">{team.name}</TableCell>
+                    <TableCell>{team.points}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </div>
     </section>
   );

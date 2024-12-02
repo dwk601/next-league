@@ -1,3 +1,6 @@
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+
 export default function UpcomingMatches() {
   const matches = [
     {
@@ -16,23 +19,25 @@ export default function UpcomingMatches() {
 
   return (
     <section className="py-12">
-      <h2 className="text-3xl font-bold mb-6">Upcoming Matches</h2>
-      <div className="grid gap-4">
-        {matches.map((match) => (
-          <div
-            key={`${match.home}-${match.away}`}
-            className="bg-white rounded-lg shadow p-6"
-          >
-            <div className="flex justify-between items-center">
-              <span className="font-semibold">{match.home}</span>
-              <span className="text-gray-500">vs</span>
-              <span className="font-semibold">{match.away}</span>
-            </div>
-            <div className="text-center text-gray-500 mt-2">
-              {match.date} - {match.time}
-            </div>
-          </div>
-        ))}
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold mb-6">Upcoming Matches</h2>
+        <div className="grid gap-4">
+          {matches.map((match) => (
+            <Card key={`${match.home}-${match.away}`}>
+              <CardContent className="pt-6">
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-semibold">{match.home}</span>
+                  <span className="text-muted-foreground px-4">vs</span>
+                  <span className="text-lg font-semibold">{match.away}</span>
+                </div>
+                <Separator className="my-4" />
+                <div className="text-center text-muted-foreground">
+                  {match.date} - {match.time}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -2,20 +2,16 @@ import { prisma } from '@/app/lib/prisma';
 import { NextResponse } from 'next/server';
 
 export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
-  const teamId = searchParams.get('teamId');
-
   try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    const teamId = searchParams.get('teamId');
+
     if (id) {
       const coach = await prisma.coach.findUnique({
         where: { id: parseInt(id) },
         include: {
-          team: {
-            include: {
-              league: true
-            }
-          },
+          team: true,
           stats: true
         },
       });
@@ -28,15 +24,10 @@ export async function GET(request) {
     }
 
     const where = teamId ? { teamId: parseInt(teamId) } : {};
-
     const coaches = await prisma.coach.findMany({
       where,
       include: {
-        team: {
-          include: {
-            league: true
-          }
-        },
+        team: true,
         stats: true
       }
     });
@@ -56,9 +47,11 @@ export async function POST(request) {
         firstName: body.firstName,
         lastName: body.lastName,
         dateOfBirth: body.dateOfBirth ? new Date(body.dateOfBirth) : null,
-        nationality: body.nationality,
-        imageUrl: body.imageUrl,
-        teamId: parseInt(body.teamId),
+        nationality: body.nationality || null,
+        imageUrl: body.imageUrl || null,
+        team: {
+          connect: { id: parseInt(body.teamId) }
+        },
         stats: {
           create: {
             wins: 0,
@@ -72,7 +65,7 @@ export async function POST(request) {
         stats: true
       }
     });
-    return NextResponse.json(coach, { status: 201 });
+    return NextResponse.json(coach);
   } catch (error) {
     console.error('Coach Creation Error:', error);
     return NextResponse.json({ error: 'Error creating coach' }, { status: 500 });
@@ -82,16 +75,18 @@ export async function POST(request) {
 export async function PUT(request) {
   try {
     const { id, ...data } = await request.json();
+    const updateData = {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      nationality: data.nationality,
+      imageUrl: data.imageUrl,
+      ...(data.dateOfBirth && { dateOfBirth: new Date(data.dateOfBirth) }),
+      ...(data.teamId && { team: { connect: { id: parseInt(data.teamId) } } })
+    };
+
     const coach = await prisma.coach.update({
       where: { id: parseInt(id) },
-      data: {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
-        nationality: data.nationality,
-        imageUrl: data.imageUrl,
-        teamId: data.teamId ? parseInt(data.teamId) : undefined
-      },
+      data: updateData,
       include: {
         team: true,
         stats: true
@@ -99,6 +94,7 @@ export async function PUT(request) {
     });
     return NextResponse.json(coach);
   } catch (error) {
+    console.error('Coach Update Error:', error);
     return NextResponse.json({ error: 'Error updating coach' }, { status: 500 });
   }
 }
@@ -109,8 +105,9 @@ export async function DELETE(request) {
     await prisma.coach.delete({
       where: { id: parseInt(id) }
     });
-    return NextResponse.json({ message: 'Coach deleted' });
+    return NextResponse.json({ message: 'Coach deleted successfully' });
   } catch (error) {
+    console.error('Coach Deletion Error:', error);
     return NextResponse.json({ error: 'Error deleting coach' }, { status: 500 });
   }
 }

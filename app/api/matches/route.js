@@ -21,13 +21,18 @@ export async function GET(request) {
     }
 
     const matches = await prisma.match.findMany({
+      where: {
+        date: {
+          gte: new Date(),
+        },
+      },
       include: {
         homeTeam: true,
         awayTeam: true,
         venue: true,
       },
       orderBy: {
-        date: 'desc',
+        date: 'asc',
       },
       take: 10,
     });

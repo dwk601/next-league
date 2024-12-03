@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');
+  const top = searchParams.get('top');
 
   try {
     if (id) {
@@ -17,6 +18,28 @@ export async function GET(request) {
         },
       });
       return player ? NextResponse.json(player) : NextResponse.json({ error: 'Player not found' }, { status: 404 });
+    }
+
+    if (top) {
+      const limit = parseInt(top);
+      const players = await prisma.player.findMany({
+        include: {
+          team: true,
+          stats: true,
+        },
+        where: {
+          stats: {
+            isNot: null
+          }
+        },
+        orderBy: {
+          stats: {
+            goals: 'desc'
+          }
+        },
+        take: limit
+      });
+      return NextResponse.json(players);
     }
 
     const players = await prisma.player.findMany({

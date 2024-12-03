@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Trash2 } from 'lucide-react';
 
 interface DeletePlayerProps {
   playerId: number;
@@ -31,9 +32,9 @@ export default function DeletePlayer({ playerId }: DeletePlayerProps) {
     <>
       <button
         onClick={() => setIsConfirmOpen(true)}
-        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-gray-500 hover:text-red-500"
+        className="absolute top-2 right-2 p-2 opacity-0 group-hover:opacity-100 transition-opacity text-gray-500 hover:text-red-600"
       >
-        ✕
+        <Trash2 className="h-5 w-5" />
       </button>
 
       {isConfirmOpen && (

@@ -4,6 +4,7 @@ import { Match } from '@prisma/client';
 import CreatePlayerModal from '@/components/CreatePlayerModal';
 import DeletePlayer from '@/components/DeletePlayer';
 import CreateCoachModal from '@/components/CreateCoachModal';
+import DeleteCoach from '@/components/DeleteCoach';
 
 interface ExtendedMatch extends Match {
   homeTeam: { name: string };
@@ -122,7 +123,8 @@ export default async function TeamPage({ params }: TeamPageProps) {
           {!team.coach && <CreateCoachModal teamId={team.id} teamName={team.name} />}
         </div>
         {team.coach ? (
-          <div className="p-4 border rounded-lg">
+          <div className="p-4 border rounded-lg relative group">
+            <DeleteCoach coachId={team.coach.id} />
             <h3 className="text-xl mb-2">
               {team.coach.firstName} {team.coach.lastName}
             </h3>

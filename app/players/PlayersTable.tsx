@@ -51,7 +51,7 @@ export default function PlayersTable() {
         let aValue = a[sortConfig.key as keyof typeof a] ?? ''
         let bValue = b[sortConfig.key as keyof typeof b] ?? ''
 
-        if (sortConfig.key === 'goals' || sortConfig.key === 'assists') {
+        if (sortConfig.key === 'goals' || sortConfig.key === 'assists' || sortConfig.key === 'matches') {
           aValue = a.stats?.[sortConfig.key] ?? 0
           bValue = b.stats?.[sortConfig.key] ?? 0
         }

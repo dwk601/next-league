@@ -17,13 +17,13 @@ export async function GET(request) {
               players: {
                 select: {
                   id: true,
-                  name: true,
+                  firstName: true,
+                  lastName: true,
                 }
               },
             }
           },
           stats: true,
-          certifications: true,
         },
       });
 
@@ -34,7 +34,6 @@ export async function GET(request) {
       return NextResponse.json(coach);
     }
 
-    // Query params for filtering coaches
     const where = teamId ? { teamId: parseInt(teamId) } : {};
 
     const coaches = await prisma.coach.findMany({
@@ -52,20 +51,7 @@ export async function GET(request) {
             }
           }
         },
-        stats: {
-          select: {
-            victories: true,
-            defeats: true,
-            seasonWins: true,
-          }
-        },
-        certifications: {
-          select: {
-            name: true,
-            issuedDate: true,
-            expiryDate: true,
-          }
-        }
+        stats: true,
       },
     });
 
@@ -81,12 +67,17 @@ export async function POST(request) {
     const body = await request.json();
     const coach = await prisma.coach.create({
       data: {
-        ...body,
+        firstName: body.firstName,
+        lastName: body.lastName,
+        dateOfBirth: body.dateOfBirth,
+        nationality: body.nationality,
+        imageUrl: body.imageUrl,
+        teamId: body.teamId,
         stats: {
           create: {
-            victories: 0,
-            defeats: 0,
-            seasonWins: 0,
+            wins: 0,
+            losses: 0,
+            draws: 0,
           }
         }
       },

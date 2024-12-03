@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/app/lib/prisma';
-import CreateTeamModal from '../components/CreateTeamModal';
+import CreateTeamModal from '@/components/CreateTeamModal';
 
 async function getLeaguesWithTeams() {
   return await prisma.league.findMany({

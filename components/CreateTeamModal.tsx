@@ -2,25 +2,45 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 interface CreateTeamModalProps {
   leagues: Array<{ id: number; name: string; }>;
 }
 
 export default function CreateTeamModal({ leagues }: CreateTeamModalProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    leagueId: '',
+    teamType: ''
+  });
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    const formData = new FormData(e.currentTarget);
     const teamData = {
-      name: formData.get('name'),
-      leagueId: parseInt(formData.get('leagueId') as string),
-      teamType: formData.get('teamType'),
+      name: formData.name,
+      leagueId: parseInt(formData.leagueId),
+      teamType: formData.teamType,
     };
 
     try {
@@ -33,7 +53,7 @@ export default function CreateTeamModal({ leagues }: CreateTeamModalProps) {
       });
 
       if (response.ok) {
-        setIsOpen(false);
+        setOpen(false);
         router.refresh();
       } else {
         throw new Error('Failed to create team');
@@ -46,77 +66,62 @@ export default function CreateTeamModal({ leagues }: CreateTeamModalProps) {
   };
 
   return (
-    <>
-      <button
-        onClick={() => setIsOpen(true)}
-        className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg"
-      >
-        Create Team
-      </button>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button>Create Team</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Create New Team</DialogTitle>
+        </DialogHeader>
 
-      {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg w-full max-w-md">
-            <h2 className="text-2xl font-bold mb-4">Create New Team</h2>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label className="block mb-2">Team Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  required
-                  className="w-full p-2 border rounded"
-                />
-              </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            placeholder="Team Name"
+            value={formData.name}
+            onChange={(e) => setFormData({...formData, name: e.target.value})}
+            required
+          />
 
-              <div className="mb-4">
-                <label className="block mb-2">League</label>
-                <select
-                  name="leagueId"
-                  required
-                  className="w-full p-2 border rounded"
-                >
-                  <option value="">Select League</option>
-                  {leagues.map((league) => (
-                    <option key={league.id} value={league.id}>
-                      {league.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+          <Select
+            value={formData.leagueId}
+            onValueChange={(value) => setFormData({...formData, leagueId: value})}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select League" />
+            </SelectTrigger>
+            <SelectContent>
+              {leagues.map((league) => (
+                <SelectItem key={league.id} value={league.id.toString()}>
+                  {league.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-              <div className="mb-4">
-                <label className="block mb-2">Team Type</label>
-                <select
-                  name="teamType"
-                  required
-                  className="w-full p-2 border rounded"
-                >
-                  <option value="COLLEGE">College</option>
-                  <option value="PROFESSIONAL">Professional</option>
-                </select>
-              </div>
+          <Select
+            value={formData.teamType}
+            onValueChange={(value) => setFormData({...formData, teamType: value})}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Team Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="COLLEGE">College</SelectItem>
+              <SelectItem value="PROFESSIONAL">Professional</SelectItem>
+            </SelectContent>
+          </Select>
 
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 border rounded"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded disabled:opacity-50"
-                >
-                  {isLoading ? 'Creating...' : 'Create Team'}
-                </button>
-              </div>
-            </form>
+          <div className="flex justify-end space-x-2">
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? 'Creating...' : 'Create Team'}
+            </Button>
           </div>
-        </div>
-      )}
-    </>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

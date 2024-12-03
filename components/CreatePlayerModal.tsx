@@ -18,6 +18,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const POSITIONS = ['Goalkeeper', 'Defender', 'Midfielder', 'Forward'];
+
 type Team = {
   id: number;
   name: string;
@@ -84,10 +86,18 @@ export default function CreatePlayerModal({ teams, buttonType }: CreatePlayerMod
                   ))}
                 </SelectContent>
               </Select>
-              <Input
-                placeholder="Position"
-                onChange={(e) => setFormData({...formData, position: e.target.value})}
-              />
+              <Select onValueChange={(value) => setFormData({...formData, position: value})}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Position" />
+                </SelectTrigger>
+                <SelectContent>
+                  {POSITIONS.map((position) => (
+                    <SelectItem key={position} value={position}>
+                      {position}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Input
                 type="date"
                 placeholder="Date of Birth"

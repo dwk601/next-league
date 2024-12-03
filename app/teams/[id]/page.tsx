@@ -1,6 +1,7 @@
 import { prisma } from '@/app/lib/prisma';
 import { notFound } from 'next/navigation';
 import { Match } from '@prisma/client';
+import CreatePlayerModal from '@/components/CreatePlayerModal';
 
 interface ExtendedMatch extends Match {
   homeTeam: { name: string };
@@ -107,9 +108,12 @@ export default async function TeamPage({ params }: TeamPageProps) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">{team.name}</h1>
-        <p className="text-gray-600">{team.league.name} • {team.teamType}</p>
+      <div className="mb-8 flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">{team.name}</h1>
+          <p className="text-gray-600">{team.league.name} • {team.teamType}</p>
+        </div>
+        <CreatePlayerModal teams={[{ id: team.id, name: team.name }]} buttonType="create" />
       </div>
 
       {/* Coach Section */}

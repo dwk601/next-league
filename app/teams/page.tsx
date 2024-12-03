@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/app/lib/prisma';
+import CreateTeamModal from '../components/CreateTeamModal';
 
 async function getLeaguesWithTeams() {
   return await prisma.league.findMany({
@@ -19,7 +20,10 @@ export default async function TeamsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Teams</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Teams</h1>
+        <CreateTeamModal leagues={leagues.map(l => ({ id: l.id, name: l.name }))} />
+      </div>
       {leagues.map((league) => (
         <div key={league.id} className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">{league.name}</h2>

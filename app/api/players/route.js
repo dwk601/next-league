@@ -102,3 +102,26 @@ export async function PUT(request) {
     return NextResponse.json({ error: 'Error updating player' }, { status: 500 });
   }
 }
+
+export async function DELETE(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: 'Player ID is required' }, { status: 400 });
+    }
+
+    await prisma.playerStats.deleteMany({
+      where: { playerId: parseInt(id) },
+    });
+
+    const player = await prisma.player.delete({
+      where: { id: parseInt(id) },
+    });
+
+    return NextResponse.json(player);
+  } catch (error) {
+    return NextResponse.json({ error: 'Error deleting player' }, { status: 500 });
+  }
+}

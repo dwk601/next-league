@@ -32,6 +32,7 @@ type CreatePlayerModalProps = {
 
 export default function CreatePlayerModal({ teams, buttonType }: CreatePlayerModalProps) {
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -43,8 +44,35 @@ export default function CreatePlayerModal({ teams, buttonType }: CreatePlayerMod
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Implementation of player creation/deletion logic
-    setOpen(false);
+    setLoading(true);
+    
+    try {
+      const response = await fetch('/api/players', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          teamId: parseInt(formData.teamId),
+          dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString() : null,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create player');
+      }
+
+      setOpen(false);
+      // You might want to add a success notification here
+      
+    } catch (error) {
+      console.error('Error creating player:', error);
+      // You might want to add an error notification here
+      
+    } finally {
+      setLoading(false);
+    }
   };
 
   const buttonVariant = buttonType === 'create' ? 'default' : 'destructive';
@@ -123,8 +151,12 @@ export default function CreatePlayerModal({ teams, buttonType }: CreatePlayerMod
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" variant={buttonVariant}>
-              {buttonType === 'create' ? 'Add Player' : 'Delete Player'}
+            <Button 
+              type="submit" 
+              variant={buttonVariant}
+              disabled={loading}
+            >
+              {loading ? 'Creating...' : buttonType === 'create' ? 'Add Player' : 'Delete Player'}
             </Button>
           </div>
         </form>

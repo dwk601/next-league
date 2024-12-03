@@ -2,6 +2,7 @@ import { prisma } from '@/app/lib/prisma';
 import { notFound } from 'next/navigation';
 import { Match } from '@prisma/client';
 import CreatePlayerModal from '@/components/CreatePlayerModal';
+import DeletePlayer from '@/components/DeletePlayer';
 
 interface ExtendedMatch extends Match {
   homeTeam: { name: string };
@@ -140,7 +141,8 @@ export default async function TeamPage({ params }: TeamPageProps) {
         <h2 className="text-2xl font-semibold mb-4">Players</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {team.players.map((player) => (
-            <div key={player.id} className="p-4 border rounded-lg">
+            <div key={player.id} className="p-4 border rounded-lg relative group">
+              <DeletePlayer playerId={player.id} />
               <h3 className="text-lg font-semibold">
                 {player.firstName} {player.lastName}
               </h3>

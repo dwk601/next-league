@@ -5,6 +5,8 @@ import CreatePlayerModal from '@/components/CreatePlayerModal';
 import DeletePlayer from '@/components/DeletePlayer';
 import CreateCoachModal from '@/components/CreateCoachModal';
 import DeleteCoach from '@/components/DeleteCoach';
+import EditCoachModal from '@/components/EditCoachModal';
+import EditPlayerModal from '@/components/EditPlayerModal';
 
 interface ExtendedMatch extends Match {
   homeTeam: { name: string };
@@ -124,6 +126,7 @@ export default async function TeamPage({ params }: TeamPageProps) {
         </div>
         {team.coach ? (
           <div className="p-4 border rounded-lg relative group">
+            <EditCoachModal coach={team.coach} />
             <DeleteCoach coachId={team.coach.id} />
             <h3 className="text-xl mb-2">
               {team.coach.firstName} {team.coach.lastName}
@@ -148,6 +151,7 @@ export default async function TeamPage({ params }: TeamPageProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {team.players.map((player) => (
             <div key={player.id} className="p-4 border rounded-lg relative group">
+              <EditPlayerModal player={player} />
               <DeletePlayer playerId={player.id} />
               <h3 className="text-lg font-semibold">
                 {player.firstName} {player.lastName}

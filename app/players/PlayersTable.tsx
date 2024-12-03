@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
 import { usePlayersData } from "./usePlayersData"
+import PlayersTableLoading from "./PlayersTableLoading"
 
 type SortConfig = {
   key: string
@@ -51,7 +52,7 @@ export default function PlayersTable() {
     }))
   }
 
-  if (isLoading) return <div>Loading...</div>
+  if (isLoading) return <PlayersTableLoading />
   if (error) return <div>Error: {error}</div>
 
   return (

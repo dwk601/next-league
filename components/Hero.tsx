@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Hero() {
   return (
-    <div className="bg-gradient-to-r from-primary/90 to-primary text-primary-foreground py-24">
+    <div className="bg-gradient-to-r from-primary/90 to-primary text-primary-foreground py-48">
       <div className="container mx-auto px-4 text-center space-y-6">
         <h1 className="text-6xl font-bold tracking-tighter">
           Welcome to NextLeague

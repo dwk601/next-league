@@ -9,6 +9,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
 import { usePlayersData } from "./usePlayersData"
@@ -23,6 +31,8 @@ export default function PlayersTable() {
   const { players, isLoading, error } = usePlayersData()
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: '', direction: 'asc' })
   const [sortedPlayers, setSortedPlayers] = useState(players)
+  const [currentPage, setCurrentPage] = useState(1)
+  const playersPerPage = 20
 
   useEffect(() => {
     if (players) {
@@ -51,6 +61,12 @@ export default function PlayersTable() {
       direction: current.key === key && current.direction === 'asc' ? 'desc' : 'asc',
     }))
   }
+
+  const pageCount = Math.ceil((sortedPlayers?.length || 0) / playersPerPage)
+  const paginatedPlayers = sortedPlayers?.slice(
+    (currentPage - 1) * playersPerPage,
+    currentPage * playersPerPage
+  )
 
   if (isLoading) return <PlayersTableLoading />
   if (error) return <div>Error: {error}</div>
@@ -98,7 +114,7 @@ export default function PlayersTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedPlayers?.map((player) => (
+          {paginatedPlayers?.map((player) => (
             <TableRow key={player.id}>
               <TableCell>{`${player.firstName} ${player.lastName}`}</TableCell>
               <TableCell>{player.team.name}</TableCell>
@@ -111,6 +127,39 @@ export default function PlayersTable() {
           ))}
         </TableBody>
       </Table>
+      
+      {pageCount > 1 && (
+        <div className="flex justify-center py-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  className={currentPage === 1 ? 'disabled' : ''}
+                />
+              </PaginationItem>
+              
+              {[...Array(pageCount)].map((_, i) => (
+                <PaginationItem key={i + 1}>
+                  <PaginationLink
+                    onClick={() => setCurrentPage(i + 1)}
+                    isActive={currentPage === i + 1}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => setCurrentPage(p => Math.min(pageCount, p + 1))}
+                  className={currentPage === pageCount ? 'disabled' : ''}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   )
 }

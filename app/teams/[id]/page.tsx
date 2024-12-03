@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { Match } from '@prisma/client';
 import CreatePlayerModal from '@/components/CreatePlayerModal';
 import DeletePlayer from '@/components/DeletePlayer';
+import CreateCoachModal from '@/components/CreateCoachModal';
 
 interface ExtendedMatch extends Match {
   homeTeam: { name: string };
@@ -109,17 +110,17 @@ export default async function TeamPage({ params }: TeamPageProps) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">{team.name}</h1>
-          <p className="text-gray-600">{team.league.name} • {team.teamType}</p>
-        </div>
-        <CreatePlayerModal teams={[{ id: team.id, name: team.name }]} buttonType="create" />
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">{team.name}</h1>
+        <p className="text-gray-600">{team.league.name} • {team.teamType}</p>
       </div>
 
       {/* Coach Section */}
       <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Coach</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold">Coach</h2>
+          {!team.coach && <CreateCoachModal teamId={team.id} teamName={team.name} />}
+        </div>
         {team.coach ? (
           <div className="p-4 border rounded-lg">
             <h3 className="text-xl mb-2">
@@ -138,7 +139,10 @@ export default async function TeamPage({ params }: TeamPageProps) {
 
       {/* Players Section */}
       <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Players</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold">Players</h2>
+          <CreatePlayerModal teams={[{ id: team.id, name: team.name }]} buttonType="create" />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {team.players.map((player) => (
             <div key={player.id} className="p-4 border rounded-lg relative group">

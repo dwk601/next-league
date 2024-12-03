@@ -64,7 +64,7 @@ export default function CreatePlayerModal({ teams, buttonType }: CreatePlayerMod
       }
 
       setOpen(false);
-      // You might want to add a success notification here
+      window.location.reload(); // Add this line to refresh the page
       
     } catch (error) {
       console.error('Error creating player:', error);

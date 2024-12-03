@@ -13,17 +13,10 @@ export async function GET(request) {
         include: {
           team: {
             include: {
-              league: true,
-              players: {
-                select: {
-                  id: true,
-                  firstName: true,
-                  lastName: true,
-                }
-              },
+              league: true
             }
           },
-          stats: true,
+          stats: true
         },
       });
 
@@ -40,19 +33,12 @@ export async function GET(request) {
       where,
       include: {
         team: {
-          select: {
-            id: true,
-            name: true,
-            league: {
-              select: {
-                id: true,
-                name: true,
-              }
-            }
+          include: {
+            league: true
           }
         },
-        stats: true,
-      },
+        stats: true
+      }
     });
 
     return NextResponse.json(coaches);
@@ -69,21 +55,21 @@ export async function POST(request) {
       data: {
         firstName: body.firstName,
         lastName: body.lastName,
-        dateOfBirth: body.dateOfBirth,
+        dateOfBirth: body.dateOfBirth ? new Date(body.dateOfBirth) : null,
         nationality: body.nationality,
         imageUrl: body.imageUrl,
-        teamId: body.teamId,
+        teamId: parseInt(body.teamId),
         stats: {
           create: {
             wins: 0,
             losses: 0,
-            draws: 0,
+            draws: 0
           }
         }
       },
       include: {
         team: true,
-        stats: true,
+        stats: true
       }
     });
     return NextResponse.json(coach, { status: 201 });
@@ -97,8 +83,19 @@ export async function PUT(request) {
   try {
     const { id, ...data } = await request.json();
     const coach = await prisma.coach.update({
-      where: { id },
-      data,
+      where: { id: parseInt(id) },
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
+        nationality: data.nationality,
+        imageUrl: data.imageUrl,
+        teamId: data.teamId ? parseInt(data.teamId) : undefined
+      },
+      include: {
+        team: true,
+        stats: true
+      }
     });
     return NextResponse.json(coach);
   } catch (error) {
@@ -110,7 +107,7 @@ export async function DELETE(request) {
   try {
     const { id } = await request.json();
     await prisma.coach.delete({
-      where: { id },
+      where: { id: parseInt(id) }
     });
     return NextResponse.json({ message: 'Coach deleted' });
   } catch (error) {

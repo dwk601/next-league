@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import LoadingSpinner from "./LoadingSpinner";
 import { useEffect, useState } from "react";
 
 interface Match {
@@ -33,7 +34,11 @@ export default function UpcomingMatches() {
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   return (

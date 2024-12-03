@@ -1,5 +1,6 @@
 'use client';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import LoadingSpinner from "./LoadingSpinner";
 import { useEffect, useState } from "react";
 
 interface PlayerStats {
@@ -38,7 +39,11 @@ export default function TopPlayers() {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   return (

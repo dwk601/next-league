@@ -1,5 +1,6 @@
 "use client";
 
+import LoadingSpinner from "./LoadingSpinner";
 import { useEffect, useState } from "react";
 import {
   Table,
@@ -43,7 +44,14 @@ export default function LeagueOverview() {
     fetchLeagues();
   }, []);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
   if (error) return <div>Error: {error}</div>;
 
   return (

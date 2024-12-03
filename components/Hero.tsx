@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -10,9 +11,11 @@ export default function Hero() {
         <p className="text-xl opacity-90 max-w-2xl mx-auto">
           Experience the thrill of premier soccer leagues
         </p>
-        <Button size="lg" variant="secondary" className="mt-4">
-          Explore Leagues
-        </Button>
+        <Link href="/leagues">
+          <Button size="lg" variant="secondary" className="mt-4">
+            Explore Leagues
+          </Button>
+        </Link>
       </div>
     </div>
   );

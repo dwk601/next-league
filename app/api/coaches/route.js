@@ -1,18 +1,77 @@
+import { prisma } from '@/app/lib/prisma';
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get('id');
+  const teamId = searchParams.get('teamId');
 
-export async function GET() {
   try {
+    if (id) {
+      const coach = await prisma.coach.findUnique({
+        where: { id: parseInt(id) },
+        include: {
+          team: {
+            include: {
+              league: true,
+              players: {
+                select: {
+                  id: true,
+                  name: true,
+                }
+              },
+            }
+          },
+          stats: true,
+          certifications: true,
+        },
+      });
+
+      if (!coach) {
+        return NextResponse.json({ error: 'Coach not found' }, { status: 404 });
+      }
+
+      return NextResponse.json(coach);
+    }
+
+    // Query params for filtering coaches
+    const where = teamId ? { teamId: parseInt(teamId) } : {};
+
     const coaches = await prisma.coach.findMany({
+      where,
       include: {
-        team: true,
-        stats: true,
+        team: {
+          select: {
+            id: true,
+            name: true,
+            league: {
+              select: {
+                id: true,
+                name: true,
+              }
+            }
+          }
+        },
+        stats: {
+          select: {
+            victories: true,
+            defeats: true,
+            seasonWins: true,
+          }
+        },
+        certifications: {
+          select: {
+            name: true,
+            issuedDate: true,
+            expiryDate: true,
+          }
+        }
       },
     });
+
     return NextResponse.json(coaches);
   } catch (error) {
+    console.error('Coaches API Error:', error);
     return NextResponse.json({ error: 'Error fetching coaches' }, { status: 500 });
   }
 }
@@ -21,10 +80,24 @@ export async function POST(request) {
   try {
     const body = await request.json();
     const coach = await prisma.coach.create({
-      data: body,
+      data: {
+        ...body,
+        stats: {
+          create: {
+            victories: 0,
+            defeats: 0,
+            seasonWins: 0,
+          }
+        }
+      },
+      include: {
+        team: true,
+        stats: true,
+      }
     });
     return NextResponse.json(coach, { status: 201 });
   } catch (error) {
+    console.error('Coach Creation Error:', error);
     return NextResponse.json({ error: 'Error creating coach' }, { status: 500 });
   }
 }
